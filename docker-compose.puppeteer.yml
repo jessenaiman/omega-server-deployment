@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  puppeteer:
+    image: mcp/puppeteer
+    container_name: puppeteer-test
+    init: true
+    environment:
+      - DOCKER_CONTAINER=true
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - server-net
+
+networks:
+  server-net:
+    external: true
+    name: server-deployment_server-net

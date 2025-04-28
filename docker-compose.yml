@@ -1,0 +1,89 @@
+version: '3.9'
+
+services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/sites-available:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/log/nginx
+    restart: always
+    networks:
+      - server-net
+  
+  # Autogen service (AutoGen Studio)
+  autogen:
+    image: python:3.10-slim
+    container_name: autogen-service
+    volumes:
+      - ./autogen/my-app:/app/my-app
+      - ./autogen/data:/app/data
+    working_dir: /app
+    command: >
+      bash -c "pip install -U autogenstudio gunicorn uvicorn &&
+              gunicorn -w 4 --timeout 12600 -k uvicorn.workers.UvicornWorker autogenstudio.web.app:app --bind 0.0.0.0:5000"
+    environment:
+      - AUTOGENSTUDIO_APPDIR=/app/my-app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: always
+    networks:
+      - server-net
+
+  # OpenWebUI service
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - ./open-webui/data:/app/backend/data
+    depends_on:
+      - ollama
+    environment:
+      - DATA_DIR=/app/backend/data
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_NAME=Open WebUI
+      - WEBUI_URL=https://webui.localhost
+    ports:
+      - "3000:8080"  # Match documentation standard
+    restart: always
+    networks:
+      - server-net
+      
+  # Ollama service for OpenWebUI
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ./open-webui/ollama:/root/.ollama
+    restart: always
+    networks:
+      - server-net
+
+  # All-Hands (OpenHands) service
+  all-hands:
+    image: docker.all-hands.dev/all-hands-ai/openhands:0.23
+    container_name: all-hands
+    volumes:
+      - ./all-hands/data:/data
+      # Optional: Connect to local filesystem if needed
+      - /home/dicewizard/projects:/workspace:ro
+    environment:
+      - OPENHANDS_DATA_DIR=/data
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "/app/entrypoint.sh --port 8000"
+    restart: always
+    networks:
+      - server-net
+
+networks:
+  server-net:
+    driver: bridge

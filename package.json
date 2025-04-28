@@ -1,0 +1,16 @@
+{
+  "name": "server-deployment",
+  "version": "1.0.0",
+  "description": "Deployment configuration for Autogen, OpenWebUI, and OpenHands",
+  "scripts": {
+    "test": "node test-deployment.js",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "backup": "sh scripts/backup.sh"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "puppeteer": "^20.9.0"
+  }
+}

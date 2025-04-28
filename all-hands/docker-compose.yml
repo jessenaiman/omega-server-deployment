@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  openhands:
+    image: docker.all-hands.dev/all-hands-ai/openhands:0.23
+    container_name: openhands
+    volumes:
+      - ./data:/data
+      # Optional: Mount local projects directory as read-only workspace
+      - /home/dicewizard/projects:/workspace:ro
+    environment:
+      # API Keys for LLM providers
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_API_KEY=${ANTHROPIC_API_KEY}
+      
+      # OpenHands configuration
+      - PORT=8000
+      - OPENHANDS_DATA_DIR=/data
+      
+      # Optional configurations
+      - SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.23
+      - OPENHANDS_LOG_LEVEL=info
+      
+    ports:
+      - "8000:8000"
+    restart: always
+    
+    # Runtime for OpenHands to execute code in sandbox environment
+    # This allows Docker in Docker (needed by OpenHands)
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

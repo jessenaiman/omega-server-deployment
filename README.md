@@ -2,13 +2,14 @@
 
 This project sets up a Docker-based environment for running three AI development platforms:
 
-1. **AutoGen Studio** - A no-code platform for building multi-agent AI applications (https://autogen.localhost)
-2. **Open WebUI** - A web interface for interacting with Ollama models (https://webui.localhost)
-3. **All-Hands/OpenHands** - An AI system for software development (https://openhands.localhost)
+1. **AutoGen Studio** - A no-code platform for building multi-agent AI applications (<https://autogen.localhost>)
+2. **Open WebUI** - A web interface for interacting with Ollama models (<https://webui.localhost>)
+3. **All-Hands/OpenHands** - An AI system for software development (<https://openhands.localhost>)
 
 ## Architecture
 
 The system uses:
+
 - Docker and Docker Compose for containerization
 - Nginx as a reverse proxy
 - Self-signed SSL certificates for local development
@@ -22,12 +23,14 @@ The system uses:
 ## Quick Start
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/server-deployment.git
    cd server-deployment
    ```
 
 2. Create an environment file from the example:
+
    ```bash
    cp .env.example .env
    ```
@@ -35,34 +38,39 @@ The system uses:
 3. Edit the `.env` file with your actual API keys
 
 4. Generate SSL certificates for local development:
+
    ```bash
    cd scripts
    ./generate_certificates.sh
    ```
 
 5. Start the services:
+
    ```bash
    docker-compose up -d
    ```
 
 6. Add entries to your hosts file for local domain resolution:
+
    ```
    127.0.0.1 autogen.localhost webui.localhost openhands.localhost
    ```
 
 7. Access the services:
-   - AutoGen Studio: https://autogen.localhost
-   - Open WebUI: https://webui.localhost
-   - All-Hands: https://openhands.localhost
+   - AutoGen Studio: <https://autogen.localhost>
+   - Open WebUI: <https://webui.localhost>
+   - All-Hands: <https://openhands.localhost>
 
 ## Testing
 
 Use the provided test script to check if services are running properly:
+
 ```bash
 ./scripts/test_services.sh
 ```
 
 You can also test individual services:
+
 ```bash
 ./scripts/test_services.sh autogen    # Test only AutoGen Studio
 ./scripts/test_services.sh open-webui # Test only Open WebUI
